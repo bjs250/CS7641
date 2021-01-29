@@ -1,0 +1,6 @@
+Decision Tree:
+
+Nothing
+Train Accuracy: 0.965082444228904
+Test Accuracy: 0.4683257918552036
+Max depth: 22
