@@ -11,3 +11,8 @@ Best vs Random splitting
 Random is apparently faster
 Random avoid overfitting
 Best is good for low number of features with not much overfitting
+
+Setting max_depth
+
+Determine if the model is underfitting or overfitting
+

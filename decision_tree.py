@@ -56,3 +56,6 @@ def get_current_time():
 
 if __name__ == '__main__':
     max_depth_experiment()
+    # train_acc, test_acc = main(max_depth=5)
+    # print("Train:", train_acc)
+    # print("Test:", test_acc)
