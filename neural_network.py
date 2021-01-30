@@ -1,9 +1,32 @@
 import preprocessing
+import learning_curves
+
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn import metrics 
+import matplotlib.pyplot as plt
+
+def get_learning_curves():
+    X_train, y_train, X_test, y_test = preprocessing.preprocess()
+
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+    
+    X_train = scaler.transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    mlp = MLPClassifier(hidden_layer_sizes=(10, 10, 10), max_iter=1000)
+
+    learning_curves.get_learning_curves(
+        X_train,
+        y_train,
+        mlp,
+        "Learning Curve - NN",
+        output="figures/NN/learning_curve"
+    )
 
 def main():
     X_train, y_train, X_test, y_test = preprocessing.preprocess()
@@ -32,4 +55,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    get_learning_curves();

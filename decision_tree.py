@@ -1,10 +1,11 @@
 import preprocessing
+import utils
+
 from sklearn.tree import DecisionTreeClassifier 
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split 
 from sklearn import metrics 
 import matplotlib.pyplot as plt
-from datetime import datetime
 
 def evaluate(max_depth):
     X_train, y_train, X_test, y_test = preprocessing.preprocess()
@@ -51,14 +52,10 @@ def max_depth_experiment(should_plot = False):
         plt.xticks(X)
         plt.legend()
         plt.title("Tuning max_depth")
-        plt.savefig("figures/decision_tree/max_depth" + get_current_time() + ".png")
+        plt.savefig("figures/decision_tree/max_depth" + utils.get_current_time() + ".png")
         plt.show()
 
     return clf.best_params_["max_depth"]
-
-def get_current_time():
-    now = datetime.now()
-    return now.strftime("%m-%d-%Y-%H:%M:%S")
 
 if __name__ == '__main__':
     max_depth = max_depth_experiment(should_plot=False)
