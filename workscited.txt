@@ -1,2 +1,9 @@
+Processing
+https://pbpython.com/categorical-encoding.html
+
+DT
 https://www.datacamp.com/community/tutorials/decision-tree-classification-python
 https://towardsdatascience.com/how-to-tune-a-decision-tree-f03721801680
+
+NN
+https://stackabuse.com/introduction-to-neural-networks-with-scikit-learn/

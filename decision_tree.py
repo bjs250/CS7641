@@ -1,16 +1,12 @@
 import preprocessing
-from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
-from sklearn.model_selection import train_test_split # Import train_test_split function
-from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
+from sklearn.tree import DecisionTreeClassifier 
+from sklearn.model_selection import train_test_split 
+from sklearn import metrics 
 import matplotlib.pyplot as plt
 from datetime import datetime
 
 def main(max_depth):
-    df = preprocessing.preprocess()
-    X = df[preprocessing.feature_columns]
-    y = df[preprocessing.label_column]
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1)
+    X_train, y_train, X_test, y_test = preprocessing.preprocess()
 
     clf = DecisionTreeClassifier(
         criterion="gini", 
@@ -23,22 +19,22 @@ def main(max_depth):
 
     train_acc  = metrics.accuracy_score(y_train, y_pred_train)
     test_acc = metrics.accuracy_score(y_test, y_pred_test)
-    return (train_acc, test_acc)
+    return (train_acc, test_acc, clf.tree_.max_depth)
 
 def max_depth_experiment():
-    min_max_depth = 5
-    max_max_depth = 22
+    min_max_depth = 2
+    max_max_depth = 36
     X = list()
     Y1 = list()
     Y2 = list()
     for max_depth in range(min_max_depth, max_max_depth + 1):
-        train_acc, test_acc = main(max_depth = max_depth)
-        X.append(max_depth)
+        train_acc, test_acc, depth = main(max_depth = max_depth)
+        X.append(depth)
         Y1.append(train_acc)
         Y2.append(test_acc)
         print("Train:", train_acc)
         print("Test:", test_acc)
-        print("Depth:", max_depth)
+        print("Depth:", depth)
 
     plt.plot(X, Y1, label = "train")
     plt.plot(X, Y2, label = "test")
@@ -56,6 +52,7 @@ def get_current_time():
 
 if __name__ == '__main__':
     max_depth_experiment()
-    # train_acc, test_acc = main(max_depth=5)
+    # train_acc, test_acc, max_depth = main(max_depth=5)
     # print("Train:", train_acc)
     # print("Test:", test_acc)
+    # print("Depth:", max_depth)
