@@ -6,11 +6,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn import metrics 
 
 def main():
-    df = preprocessing.preprocess()
-    X = df[preprocessing.feature_columns]
-    y = df[preprocessing.label_column]
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1)
+    X_train, y_train, X_test, y_test = preprocessing.preprocess()
 
     scaler = StandardScaler()
     scaler.fit(X_train)
