@@ -9,3 +9,4 @@ https://towardsdatascience.com/how-to-tune-a-decision-tree-f03721801680
 NN
 https://stackabuse.com/introduction-to-neural-networks-with-scikit-learn/
 https://panjeh.medium.com/scikit-learn-hyperparameter-optimization-for-mlpclassifier-4d670413042b
+https://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden-layers-and-nodes-in-a-feedforward-neural-netw

@@ -29,7 +29,7 @@ def get_learning_curves():
         output="figures/NN/learning_curve"
     )
 
-def main():
+def evaluate(parameters):
     X_train, y_train, X_test, y_test = preprocessing.preprocess()
 
     scaler = StandardScaler()
@@ -38,7 +38,14 @@ def main():
     X_train = scaler.transform(X_train)
     X_test = scaler.transform(X_test)
 
-    mlp = MLPClassifier(hidden_layer_sizes=(10, 10, 10), max_iter=1000)
+    mlp = MLPClassifier(
+        hidden_layer_sizes=parameters['hidden_layer_sizes'],
+        activation=parameters['activation'],
+        solver=parameters['solver'],
+        alpha=parameters['alpha'],
+        learning_rate=parameters['learning_rate'],
+        max_iter=1000
+    )
     mlp.fit(X_train, y_train.values.ravel())
     predictions = mlp.predict(X_test)
 
@@ -65,11 +72,11 @@ def get_best_parameters():
     X_test = scaler.transform(X_test)
 
     parameters = {
-        'hidden_layer_sizes': [(10,10,10)],
-        # 'activation': ['tanh', 'relu'],
-        # 'solver': ['sgd', 'adam'],
-        # 'alpha': [0.0001, 0.05],
-        # 'learning_rate': ['constant','adaptive'],
+        'hidden_layer_sizes': [(8)],
+        'activation': ['tanh', 'relu'],
+        'solver': ['sgd', 'adam'],
+        'alpha': [0.0001, 0.05],
+        'learning_rate': ['constant','adaptive'],
     }      
 
     mlp = MLPClassifier(max_iter=1000)
@@ -96,5 +103,5 @@ if __name__ == '__main__':
     else:
         filehandler = open('params/NN.obj', 'rb') 
         best_params = pickle.load(filehandler)
-    print(best_params)
+    evaluate(best_params)
     # get_learning_curves();
