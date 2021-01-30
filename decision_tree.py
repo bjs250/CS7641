@@ -1,6 +1,7 @@
 import preprocessing
 import utils
 
+import time
 from sklearn.tree import DecisionTreeClassifier 
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split 
@@ -15,7 +16,10 @@ def evaluate(max_depth):
         splitter="best",
         max_depth=max_depth
     )
+    start = time.time()
     clf = clf.fit(X_train,y_train)
+    stop = time.time()
+    print(f"Training time: {stop - start}s")
     y_pred_train = clf.predict(X_train)
     y_pred_test = clf.predict(X_test)
 
