@@ -9,15 +9,16 @@ def get_learning_curves(
     y_train, 
     estimator,
     title,
-    output
+    output,
+    cv
     ):
 
     train_sizes, train_scores, valid_scores, fit_times, _ = learning_curve(
         estimator, 
         X_train, 
         y_train, 
-        train_sizes=[10, 100, 1000, 5000, 10000, 20000], 
-        cv=5,
+        train_sizes=[10, 100, 1000, 5000, 10000], 
+        cv=cv,
         return_times=True
     )
 
@@ -50,5 +51,5 @@ def get_learning_curves(
                  label="Cross-validation score")
     axes.legend(loc="best")
 
-    plt.savefig(output + utils.get_current_time() + ".png")
     plt.show()
+    plt.savefig(output + utils.get_current_time() + ".png")
