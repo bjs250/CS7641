@@ -17,7 +17,7 @@ def get_learning_curves(
         estimator, 
         X_train, 
         y_train, 
-        train_sizes=[10, 100, 1000, 5000, 10000], 
+        train_sizes=[10, 100, 1000, 5000, 10000, 20000], 
         cv=cv,
         return_times=True
     )
