@@ -2,6 +2,7 @@ import preprocessing
 import utils
 
 import time
+import pickle
 from sklearn.tree import DecisionTreeClassifier 
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split 
@@ -61,6 +62,39 @@ def max_depth_experiment(should_plot = False):
 
     return clf.best_params_["max_depth"]
 
+def get_best_parameters():
+    X_train, y_train, X_test, y_test = preprocessing.preprocess()
+
+    parameters = {
+        'criterion':["gini","entropy"],
+        'splitter':["best","random"],
+        'max_depth':[1, 5, 10, 15, 20]
+    }      
+
+    dt = DecisionTreeClassifier()
+
+    clf = GridSearchCV(    
+        dt,
+        parameters,
+        cv=5, 
+        n_jobs=-1,
+        return_train_score=True,
+        verbose=10
+    )
+    clf.fit(X_train, y_train)
+
+    best_params = clf.best_params_
+    file_pi = open('params/decision_tree.obj', 'wb') 
+    pickle.dump(best_params, file_pi) 
+
+    return best_params
+
 if __name__ == '__main__':
-    max_depth = max_depth_experiment(should_plot=False)
-    evaluate(max_depth=max_depth)
+    # max_depth = max_depth_experiment(should_plot=False)
+    # evaluate(max_depth=max_depth)
+    if False:
+        best_params = get_best_parameters()
+    else:
+        filehandler = open('params/decision_tree.obj', 'rb') 
+        best_params = pickle.load(filehandler)
+        print(best_params)
