@@ -29,7 +29,7 @@ def get_learning_curves(
     fit_times_mean = np.mean(fit_times, axis=1)
     fit_times_std = np.std(fit_times, axis=1)
 
-    ylim = (0.5, 1.1)
+    ylim = (0.6, 1.1)
     _, axes = plt.subplots(1, 1, figsize=(20, 5))
 
     axes.set_title(title)
@@ -45,11 +45,18 @@ def get_learning_curves(
     axes.fill_between(train_sizes, test_scores_mean - test_scores_std,
                          test_scores_mean + test_scores_std, alpha=0.1,
                          color="g")
+    axes.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                         train_scores_mean + train_scores_std, alpha=0.1,
+                         color="r")
+    axes.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                         test_scores_mean + test_scores_std, alpha=0.1,
+                         color="g")
     axes.plot(train_sizes, train_scores_mean, 'o-', color="r",
-                 label="Training score")
+                 label="Train score")
     axes.plot(train_sizes, test_scores_mean, 'o-', color="g",
-                 label="Cross-validation score")
-    axes.legend(loc="best")
+                 label="Test score")
+    axes.legend(loc="lower right")
 
+    plt.gcf().set_size_inches(6, 4)
+    plt.savefig(output + utils.get_current_time() + ".png", dpi=300)
     plt.show()
-    plt.savefig(output + utils.get_current_time() + ".png")

@@ -24,7 +24,10 @@ TEST_DATA_FILENAME = "data/adult-test.csv"
 feature_columns = data_headers[0:-1]
 label_column = data_headers[-1]
 
-def preprocess():
+def preprocess(dataset):
+    if dataset == 1:
+        TRAIN_DATA_FILENAME = "data/adult-train.csv"
+        TEST_DATA_FILENAME = "data/adult-test.csv"
     df_train = pd.read_csv(TRAIN_DATA_FILENAME, sep=',', names=data_headers)
     df_test = pd.read_csv(TEST_DATA_FILENAME, sep=',', names=data_headers)
 

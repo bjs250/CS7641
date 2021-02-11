@@ -1,5 +1,6 @@
 import preprocessing
 import utils
+import learning_curves
 
 import time
 import pickle
@@ -8,6 +9,21 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split 
 from sklearn import metrics 
 import matplotlib.pyplot as plt
+
+def get_learning_curves(dataset):
+    X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
+
+    clf = DecisionTreeClassifier()
+
+    learning_curves.get_learning_curves(
+        X_train,
+        y_train,
+        clf,
+        f"Learning Curve - decision tree, dataset: {dataset}",
+        output=f"figures/decision_tree/learning_curve_dataset{dataset}_",
+        cv=5
+    )
+
 
 def evaluate(max_depth):
     X_train, y_train, X_test, y_test = preprocessing.preprocess()
@@ -90,6 +106,8 @@ def get_best_parameters():
     return best_params
 
 if __name__ == '__main__':
+    if True:
+        get_learning_curves(1)
     # max_depth = max_depth_experiment(should_plot=False)
     # evaluate(max_depth=max_depth)
     if False:
