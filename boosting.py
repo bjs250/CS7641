@@ -26,7 +26,6 @@ def get_learning_curves(dataset):
         cv=5
     )
 
-
 def get_best_parameters(dataset):
     X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
 
