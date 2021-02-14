@@ -5,6 +5,7 @@ https://scikit-learn.org/stable/auto_examples/model_selection/plot_learning_curv
 DT
 https://www.datacamp.com/community/tutorials/decision-tree-classification-python
 https://towardsdatascience.com/how-to-tune-a-decision-tree-f03721801680
+https://scikit-learn.org/stable/auto_examples/tree/plot_cost_complexity_pruning.html
 
 NN
 https://stackabuse.com/introduction-to-neural-networks-with-scikit-learn/

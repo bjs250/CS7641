@@ -9,6 +9,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split 
 from sklearn import metrics 
 import matplotlib.pyplot as plt
+from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support
+
 
 def get_learning_curves(dataset):
     X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
@@ -25,13 +27,15 @@ def get_learning_curves(dataset):
     )
 
 
-def evaluate(max_depth):
-    X_train, y_train, X_test, y_test = preprocessing.preprocess()
+def evaluate(dataset, best_params):
+    print(best_params)
+    X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
 
     clf = DecisionTreeClassifier(
-        criterion="gini", 
-        splitter="best",
-        max_depth=max_depth
+        criterion=best_params['criterion'], 
+        splitter=best_params['splitter'],
+        max_depth=best_params['max_depth'],
+        ccp_alpha=0.00025
     )
     start = time.time()
     clf = clf.fit(X_train,y_train)
@@ -45,41 +49,13 @@ def evaluate(max_depth):
     print("Train Accuracy: ", train_acc)
     print("Test Accuracy", test_acc)
     print("Max Depth:", clf.tree_.max_depth)
-    return (train_acc, test_acc, clf.tree_.max_depth)
 
-def max_depth_experiment(should_plot = False):
-    X_train, y_train, X_test, y_test = preprocessing.preprocess()
-    parameters = {'max_depth':range(2, 36)}
-    
-    clf = GridSearchCV(    
-            DecisionTreeClassifier(
-            criterion="gini", 
-            splitter="best"
-        ),
-        parameters, 
-        n_jobs=4,
-        return_train_score=True
-    )
-    clf.fit(X_train, y_train)
+    print(precision_recall_fscore_support(y_test, y_pred_test, average='weighted'))
+    print(confusion_matrix(y_test, y_pred_test))
+    print(classification_report(y_test, y_pred_test))
 
-    if should_plot == True:
-        X = parameters["max_depth"]
-        Y1 = clf.cv_results_['mean_train_score']
-        Y2 = clf.cv_results_['mean_test_score']
-        plt.plot(X, Y1, label = "train")
-        plt.plot(X, Y2, label = "cross validation")
-        plt.xlabel("max_depth")
-        plt.ylabel("accuracy (%)")
-        plt.xticks(X)
-        plt.legend()
-        plt.title("Tuning max_depth")
-        plt.savefig("figures/decision_tree/max_depth" + utils.get_current_time() + ".png")
-        plt.show()
-
-    return clf.best_params_["max_depth"]
-
-def get_best_parameters():
-    X_train, y_train, X_test, y_test = preprocessing.preprocess()
+def get_best_parameters(dataset):
+    X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
 
     parameters = {
         'criterion':["gini","entropy"],
@@ -105,14 +81,90 @@ def get_best_parameters():
 
     return best_params
 
+def max_depth_experiment(dataset, best_params, should_plot = False):
+    X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
+    parameters = {'max_depth':range(2, 20)}
+    
+    clf = GridSearchCV(    
+            DecisionTreeClassifier(
+            criterion=best_params['criterion'], 
+            splitter=best_params['splitter']
+        ),
+        parameters, 
+        n_jobs=4,
+        return_train_score=True
+    )
+    clf.fit(X_train, y_train)
+
+    if should_plot == True:
+        X = parameters["max_depth"]
+        Y1 = clf.cv_results_['mean_train_score']
+        Y2 = clf.cv_results_['mean_test_score']
+        plt.plot(X, Y1, label = "train")
+        plt.plot(X, Y2, label = "cross validation")
+        plt.xlabel("max_depth")
+        plt.ylabel("accuracy (%)")
+        plt.xticks(X)
+        plt.legend()
+        plt.title("max_depth exploration, dataset 1")
+        plt.savefig("figures/decision_tree/max_depth" + utils.get_current_time() + ".png")
+        plt.show()
+
+    return clf.best_params_["max_depth"]
+
+def pruning(dataset, best_params):
+    X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
+
+    clf = DecisionTreeClassifier(
+        criterion=best_params['criterion'], 
+        splitter=best_params['splitter'],
+        max_depth=best_params['max_depth']
+    )
+
+    path = clf.cost_complexity_pruning_path(X_train, y_train)
+    ccp_alphas, impurities = path.ccp_alphas, path.impurities
+
+    clfs = []
+    for ccp_alpha in ccp_alphas:
+        clf = DecisionTreeClassifier(
+            random_state=0, 
+            criterion=best_params['criterion'], 
+            splitter=best_params['splitter'],
+            max_depth=best_params['max_depth'],
+            ccp_alpha=ccp_alpha
+        )
+        clf.fit(X_train, y_train)
+        clfs.append(clf)
+    print("Number of nodes in the last tree is: {} with ccp_alpha: {}".format(
+        clfs[-1].tree_.node_count, ccp_alphas[-1]))
+
+    train_scores = [clf.score(X_train, y_train) for clf in clfs]
+    test_scores = [clf.score(X_test, y_test) for clf in clfs]
+
+    fig, ax = plt.subplots()
+    ax.set_xlabel("alpha")
+    ax.set_ylabel("accuracy")
+    ax.set_title("Accuracy vs alpha for training and testing sets")
+    ax.plot(ccp_alphas, train_scores, marker='o', label="train",
+            drawstyle="steps-post")
+    ax.plot(ccp_alphas, test_scores, marker='o', label="test",
+            drawstyle="steps-post")
+    ax.legend()
+    plt.show()
+
+
 if __name__ == '__main__':
-    if True:
-        get_learning_curves(1)
-    # max_depth = max_depth_experiment(should_plot=False)
-    # evaluate(max_depth=max_depth)
+
     if False:
-        best_params = get_best_parameters()
-    else:
-        filehandler = open('params/decision_tree.obj', 'rb') 
-        best_params = pickle.load(filehandler)
-        print(best_params)
+        get_learning_curves(1)
+    if False:
+        best_params = get_best_parameters(1)
+    filehandler = open('params/decision_tree.obj', 'rb') 
+    best_params = pickle.load(filehandler)
+    if False:
+        max_depth_experiment(1, best_params, True)
+    if False:
+        pruning(1, best_params)
+    if True:
+        evaluate(1, best_params)
+        

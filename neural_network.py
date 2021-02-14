@@ -9,9 +9,10 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn import metrics 
 import matplotlib.pyplot as plt
+from sklearn.metrics import recall_score
 
-def get_learning_curves():
-    X_train, y_train, X_test, y_test = preprocessing.preprocess()
+def get_learning_curves(dataset):
+    X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
 
     scaler = StandardScaler()
     scaler.fit(X_train)
@@ -25,8 +26,9 @@ def get_learning_curves():
         X_train,
         y_train,
         mlp,
-        "Learning Curve - NN",
-        output="figures/NN/learning_curve"
+        f"Learning Curve - neural net, dataset: {dataset}",
+        output=f"figures/NN/learning_curve_dataset{dataset}_",
+        cv=5
     )
 
 def evaluate(parameters):
@@ -58,6 +60,7 @@ def evaluate(parameters):
     print("Train:", train_acc)
     print("Test:", test_acc)
 
+    print(recall_score(y_test, y_pred_test, average=None))
     print(confusion_matrix(y_test,predictions))
     print(classification_report(y_test,predictions))
 
@@ -98,6 +101,8 @@ def get_best_parameters():
     return best_params
 
 if __name__ == '__main__':
+    if True:
+        get_learning_curves(1)
     if False:
         best_params = get_best_parameters()
     else:
