@@ -1,3 +1,6 @@
+Data
+https://archive.ics.uci.edu/ml/datasets/adult
+
 Processing
 https://pbpython.com/categorical-encoding.html
 https://scikit-learn.org/stable/auto_examples/model_selection/plot_learning_curve.html

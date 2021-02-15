@@ -1,5 +1,6 @@
 import preprocessing
 import learning_curves
+import utils
 
 import pickle
 import numpy as np
@@ -100,13 +101,55 @@ def get_best_parameters():
 
     return best_params
 
+def experiment(dataset, parameters, name, scale, should_plot = True):
+    X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
+
+    mlp = MLPClassifier(hidden_layer_sizes=(8), max_iter=1000)
+    
+    clf = GridSearchCV(
+        mlp,
+        parameters, 
+        n_jobs=4,
+        return_train_score=True
+    )
+    clf.fit(X_train, y_train)
+
+    if should_plot == True:
+        X = parameters[name]
+        Y1 = clf.cv_results_['mean_train_score']
+        Y2 = clf.cv_results_['mean_test_score']
+        plt.plot(X, Y1, label = "train")
+        plt.plot(X, Y2, label = "cross validation")
+        plt.xlabel(name)
+        plt.ylabel("accuracy (%)")
+        plt.xticks(X)
+        plt.xscale(scale)
+        plt.grid(b=True, which="major")
+        plt.legend()
+        plt.title(name + " exploration, dataset 1")
+        plt.savefig("figures/NN/" + name + utils.get_current_time() + ".png")
+        plt.show()
+
+    return clf.best_params_[name]
+
 if __name__ == '__main__':
-    if True:
+
+    if False:
         get_learning_curves(1)
     if False:
-        best_params = get_best_parameters()
-    else:
-        filehandler = open('params/NN.obj', 'rb') 
-        best_params = pickle.load(filehandler)
-    evaluate(best_params)
-    # get_learning_curves();
+        best_params = get_best_parameters(1)
+    filehandler = open('params/NN.obj', 'rb') 
+    best_params = pickle.load(filehandler)
+    print(best_params)
+    if True:
+        name = "alpha"
+        parameters = {name:[0.0001, 0.001, 0.01, 0.1, 1.00]}
+        scale = 'log'
+        experiment(1, parameters, name, scale, True)
+    # if False:
+    #     parameters = {'n_estimators':[1, 5, 10, 15, 20, 25]}
+    #     name = "n_estimators"
+    #     scale = 'linear'
+    #     experiment(1, parameters, name, scale, True)
+    # if True:
+    #     evaluate(1, best_params)
