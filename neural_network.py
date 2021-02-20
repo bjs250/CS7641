@@ -1,6 +1,7 @@
 import preprocessing
 import learning_curves
 import utils
+import time
 
 import pickle
 import numpy as np
@@ -10,7 +11,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn import metrics 
 import matplotlib.pyplot as plt
-from sklearn.metrics import recall_score
+from sklearn.metrics import classification_report, confusion_matrix, precision_recall_fscore_support
 
 def get_learning_curves(dataset):
     X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
@@ -24,6 +25,7 @@ def get_learning_curves(dataset):
     mlp = MLPClassifier(hidden_layer_sizes=(10, 10, 10), max_iter=1000)
 
     learning_curves.get_learning_curves(
+        dataset,
         X_train,
         y_train,
         mlp,
@@ -32,8 +34,51 @@ def get_learning_curves(dataset):
         cv=5
     )
 
-def evaluate(parameters):
-    X_train, y_train, X_test, y_test = preprocessing.preprocess()
+def get_iterative_learning_curves(dataset):
+    X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
+
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+    
+    X_train = scaler.transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    mlp = MLPClassifier(
+        hidden_layer_sizes=(8), 
+        max_iter=100,
+        alpha=0.00001
+    )
+
+    X = []
+    Y1 = []
+    Y2 = []
+    for i in range(15):
+        X.append(100 * (i+1))
+        start = time.time()
+        mlp.partial_fit(X_train, y_train.values.ravel(), np.unique(y_train))
+        stop = time.time()
+        Y1.append(stop - start)
+        y_pred_test = mlp.predict(X_test)
+        test_acc = metrics.accuracy_score(y_test, y_pred_test)
+        Y2.append(test_acc)
+        print(i)
+
+    print(X)
+    print(Y1)
+    print(Y2)
+
+    fig,ax = plt.subplots(1)
+    ax.plot(X,Y2)
+    ax.set_xticks(X)
+    ax.set_xlabel("Iterations")
+    # ax.set_ylabel("Training Time (s)")
+    ax.set_ylabel("CV Score")
+    plt.title("Iterative LC, Dataset 2")
+    ax.grid()
+    plt.show()
+
+def evaluate(dataset, parameters):
+    X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
 
     scaler = StandardScaler()
     scaler.fit(X_train)
@@ -47,23 +92,23 @@ def evaluate(parameters):
         solver=parameters['solver'],
         alpha=parameters['alpha'],
         learning_rate=parameters['learning_rate'],
-        max_iter=1000
+        max_iter=1500
     )
+    start = time.time()
     mlp.fit(X_train, y_train.values.ravel())
-    predictions = mlp.predict(X_test)
-
+    stop = time.time()
+    print(f"Training time: {stop - start}s")
     y_pred_train = mlp.predict(X_train)
     y_pred_test = mlp.predict(X_test)
 
     train_acc  = metrics.accuracy_score(y_train, y_pred_train)
     test_acc = metrics.accuracy_score(y_test, y_pred_test)
+    print("Train Accuracy: ", train_acc)
+    print("Test Accuracy", test_acc)
 
-    print("Train:", train_acc)
-    print("Test:", test_acc)
-
-    print(recall_score(y_test, y_pred_test, average=None))
-    print(confusion_matrix(y_test,predictions))
-    print(classification_report(y_test,predictions))
+    print(precision_recall_fscore_support(y_test, y_pred_test, average='weighted'))
+    print(confusion_matrix(y_test, y_pred_test))
+    print(classification_report(y_test, y_pred_test))
 
 
 def get_best_parameters():
@@ -135,21 +180,22 @@ def experiment(dataset, parameters, name, scale, should_plot = True):
 if __name__ == '__main__':
 
     if False:
-        get_learning_curves(1)
+        get_learning_curves(2)
     if False:
         best_params = get_best_parameters(1)
     filehandler = open('params/NN.obj', 'rb') 
     best_params = pickle.load(filehandler)
     print(best_params)
-    if True:
+    if False:
         name = "alpha"
         parameters = {name:[0.0001, 0.001, 0.01, 0.1, 1.00]}
         scale = 'log'
         experiment(1, parameters, name, scale, True)
-    # if False:
-    #     parameters = {'n_estimators':[1, 5, 10, 15, 20, 25]}
-    #     name = "n_estimators"
-    #     scale = 'linear'
-    #     experiment(1, parameters, name, scale, True)
-    # if True:
-    #     evaluate(1, best_params)
+    if False:
+        parameters = {'n_estimators':[1, 5, 10, 15, 20, 25]}
+        name = "n_estimators"
+        scale = 'linear'
+        experiment(1, parameters, name, scale, True)
+    if True:
+        evaluate(1, best_params)
+    

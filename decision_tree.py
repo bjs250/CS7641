@@ -4,6 +4,7 @@ import learning_curves
 
 import time
 import pickle
+from sklearn.tree import plot_tree
 from sklearn.tree import DecisionTreeClassifier 
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split 
@@ -14,10 +15,10 @@ from sklearn.metrics import classification_report, confusion_matrix, precision_r
 
 def get_learning_curves(dataset):
     X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
-
     clf = DecisionTreeClassifier()
 
     learning_curves.get_learning_curves(
+        dataset,
         X_train,
         y_train,
         clf,
@@ -26,6 +27,15 @@ def get_learning_curves(dataset):
         cv=5
     )
 
+def graph(X_train, clf):
+
+    plt.figure(figsize=(25,40))
+    a = plot_tree(clf, 
+              filled=True, 
+              rounded=True, 
+              fontsize=14)
+    plt.savefig("figures/decision_tree/graph" + utils.get_current_time() + ".png")
+        
 
 def evaluate(dataset, best_params):
     print(best_params)
@@ -40,6 +50,7 @@ def evaluate(dataset, best_params):
     start = time.time()
     clf = clf.fit(X_train,y_train)
     stop = time.time()
+    graph(X_train, clf)
     print(f"Training time: {stop - start}s")
     y_pred_train = clf.predict(X_train)
     y_pred_test = clf.predict(X_test)
@@ -156,15 +167,15 @@ def pruning(dataset, best_params):
 if __name__ == '__main__':
 
     if False:
-        get_learning_curves(1)
+        get_learning_curves(2)
     if False:
         best_params = get_best_parameters(1)
     filehandler = open('params/decision_tree.obj', 'rb') 
     best_params = pickle.load(filehandler)
     if False:
-        max_depth_experiment(1, best_params, True)
+        max_depth_experiment(2, best_params, True)
     if False:
-        pruning(1, best_params)
+        pruning(2, best_params)
     if True:
         evaluate(1, best_params)
         

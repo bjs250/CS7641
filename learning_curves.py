@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.model_selection import learning_curve
 
 def get_learning_curves(
+    dataset,
     X_train, 
     y_train, 
     estimator,
@@ -13,11 +14,16 @@ def get_learning_curves(
     cv
     ):
 
+    if dataset == 1:
+        train_sizes=[10, 100, 1000, 5000, 10000, 20000], 
+    if dataset == 2:
+        train_sizes=[10, 100, 500, 850], 
+
     train_sizes, train_scores, valid_scores, fit_times, _ = learning_curve(
         estimator, 
         X_train, 
         y_train, 
-        train_sizes=[10, 100, 1000, 5000, 10000, 20000], 
+        train_sizes=train_sizes, 
         cv=cv,
         return_times=True
     )

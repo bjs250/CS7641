@@ -44,7 +44,7 @@ def preprocess(dataset):
         DATA_FILENAME = "data/winequality-red.csv"
         df = pd.read_csv(DATA_FILENAME, sep=';')
         X = df.loc[:, df.columns != "quality"]
-        y = df.loc[:, df.columns == "quality"]
+        y = df.loc[:, df.columns == "quality"].apply(lambda x: x >= 5)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=0)
 
     return (X_train, y_train, X_test, y_test)

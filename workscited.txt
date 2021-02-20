@@ -9,6 +9,8 @@ DT
 https://www.datacamp.com/community/tutorials/decision-tree-classification-python
 https://towardsdatascience.com/how-to-tune-a-decision-tree-f03721801680
 https://scikit-learn.org/stable/auto_examples/tree/plot_cost_complexity_pruning.html
+https://www.analyticsvidhya.com/blog/2020/10/cost-complexity-pruning-decision-trees/
+
 
 NN
 https://stackabuse.com/introduction-to-neural-networks-with-scikit-learn/

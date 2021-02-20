@@ -18,6 +18,7 @@ def get_learning_curves(dataset):
     clf = KNeighborsClassifier()
 
     learning_curves.get_learning_curves(
+        dataset,
         X_train,
         y_train,
         clf,
@@ -101,7 +102,7 @@ def experiment(dataset, parameters, name, scale, should_plot = True):
         plt.xscale(scale)
         plt.grid(b=True, which="major")
         plt.legend()
-        plt.title(name + " exploration, dataset 1")
+        plt.title(name + " exploration, dataset " + str(dataset))
         plt.savefig("figures/kNN/" + name + utils.get_current_time() + ".png")
         plt.show()
 
@@ -137,16 +138,16 @@ def evaluate(dataset, best_params):
 
 if __name__ == '__main__':
     if False:
-        get_learning_curves(1)
-    if True:
+        get_learning_curves(2)
+    if False:
         best_params = get_best_parameters(1)
     filehandler = open('params/kNN.obj', 'rb') 
     best_params = pickle.load(filehandler)
     print(best_params)
-    if False:
+    if True:
         name = "n_neighbors"
         parameters = {name:[5, 10, 15, 20, 25, 30, 35, 40]}
         scale = 'linear'
-        experiment(1, parameters, name, scale, True)
-    if True:
+        experiment(2, parameters, name, scale, True)
+    if False:
         evaluate(1, best_params)

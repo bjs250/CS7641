@@ -15,9 +15,12 @@ from sklearn.metrics import classification_report, confusion_matrix, precision_r
 def get_learning_curves(dataset):
     X_train, y_train, X_test, y_test = preprocessing.preprocess(dataset)
 
-    clf = DecisionTreeClassifier()
+    clf = DecisionTreeClassifier(
+        ccp_alpha=0.01
+    )
 
     learning_curves.get_learning_curves(
+        dataset,
         X_train,
         y_train,
         clf,
@@ -73,7 +76,7 @@ def experiment(dataset, parameters, name, scale, should_plot = True):
         criterion=dt_parameters["criterion"], 
         splitter=dt_parameters["splitter"],
         max_depth=dt_parameters["max_depth"],
-        ccp_alpha=0.0003
+        ccp_alpha=0.01
     )
 
     boost = AdaBoostClassifier(dt)
@@ -98,7 +101,7 @@ def experiment(dataset, parameters, name, scale, should_plot = True):
         plt.xscale(scale)
         plt.grid(b=True, which="major")
         plt.legend()
-        plt.title(name + " exploration, dataset 1")
+        plt.title(name + " exploration, dataset 2")
         plt.savefig("figures/boosting/" + name + utils.get_current_time() + ".png")
         plt.show()
 
@@ -115,7 +118,7 @@ def evaluate(dataset, best_params):
         criterion=dt_parameters["criterion"], 
         splitter=dt_parameters["splitter"],
         max_depth=dt_parameters["max_depth"],
-        ccp_alpha=0.0003
+        ccp_alpha=0.001
     )
 
     clf = AdaBoostClassifier(
@@ -145,7 +148,7 @@ if __name__ == '__main__':
 
     if False:
         get_learning_curves(1)
-    if False:
+    if True:
         best_params = get_best_parameters(1)
     filehandler = open('params/boosting.obj', 'rb') 
     best_params = pickle.load(filehandler)
@@ -154,11 +157,11 @@ if __name__ == '__main__':
         parameters = {'learning_rate':[0.01, 0.05, 0.10, 0.50, 1.00]}
         name = "learning_rate"
         scale = 'log'
-        experiment(1, parameters, name, scale, True)
+        experiment(2, parameters, name, scale, True)
     if False:
-        parameters = {'n_estimators':[1, 5, 10, 15, 20, 25]}
+        parameters = {'n_estimators':[1, 5, 10, 15, 20, 25, 30, 50]}
         name = "n_estimators"
         scale = 'linear'
-        experiment(1, parameters, name, scale, True)
-    if True:
+        experiment(2, parameters, name, scale, True)
+    if False:
         evaluate(1, best_params)
